@@ -175,9 +175,9 @@ else:
 # 11. Print shape
 print(f"Shape of the final combined_df: {combined_df.shape}")
 
-# 12. Display head
-if not combined_df.empty:
-    print("\nFirst 5 rows of the final combined_df:")
-    display(combined_df.head())
-else:
-    print("Final combined DataFrame is empty, no data to display.")
+## 12. Display head
+#if not combined_df.empty:
+#    print("\nFirst 5 rows of the final combined_df:")
+#    display(combined_df.head())
+#else:
+#    print("Final combined DataFrame is empty, no data to display.")
