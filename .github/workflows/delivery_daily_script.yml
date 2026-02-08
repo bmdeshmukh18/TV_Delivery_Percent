@@ -27,3 +27,15 @@ jobs:
       - name: Run script
         run: |
           python deliveryPerc_v2.py
+
+      - name: Commit and push generated file
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          if git diff --quiet nse_eq_combined_deliveryPerc.csv; then
+            echo "No changes to CSV file"
+          else
+            git add nse_eq_combined_deliveryPerc.csv
+            git commit -m "Update delivery percentage data - $(date +%Y-%m-%d)"
+            git push
+          fi
