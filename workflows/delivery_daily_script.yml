@@ -1,0 +1,29 @@
+name: Run Python Script Daily
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs every day at 6 PM IST
+    #- cron: '30 12 * * *'   # 12:30 UTC = 18:00 IST
+    - cron: '00 16 * * *'   # 16:00 UTC = 21:30 IST
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run script
+        run: |
+          python deliveryPerc_v2.py
