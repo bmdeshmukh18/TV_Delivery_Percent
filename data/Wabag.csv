@@ -1,4 +1,4 @@
-﻿Symbol  ,Date  ,% Dly Qt to Traded Qty  
+﻿Symbol  ,Date  ,DelPerc  
 WABAG,06-Feb-25,41.75
 WABAG,07-Feb-25,42.73
 WABAG,10-Feb-25,21.26
@@ -246,3 +246,4 @@ WABAG,02-Feb-26,42.13
 WABAG,03-Feb-26,49.32
 WABAG,04-Feb-26,46.63
 WABAG,05-Feb-26,47.25
+
