@@ -41,6 +41,11 @@ jobs:
             if ! git diff --quiet data/nse_eq_combined_deliveryPerc.csv; then
               git add data/nse_eq_combined_deliveryPerc.csv
               git commit -m "Update delivery percentage data - $(date +%Y-%m-%d)"
+
+              # Pull latest changes first to avoid rejection
+              git pull --rebase origin main
+
+              #Push code
               git push origin main
             else
               echo "No changes to CSV file"
