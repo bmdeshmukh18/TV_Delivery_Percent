@@ -62,7 +62,7 @@ else:
     combined_df = convert_numeric_columns(combined_df)
 
     if 'TRADE_DATE' in combined_df.columns and not combined_df['TRADE_DATE'].empty:
-        combined_df['TRADE_DATE'] = pd.to_datetime(combined_df['TRADE_DATE'])
+        combined_df['TRADE_DATE'] = pd.to_datetime(combined_df['TRADE_DATE'], format='%Y-%m-%d') # Explicitly specify format
         latest_existing_date = combined_df['TRADE_DATE'].max().normalize() # Normalize for accurate comparison
         print(f"Latest existing data is for: {latest_existing_date.strftime('%Y-%m-%d')}")
 
@@ -166,6 +166,9 @@ else:
     print("No data to process or combine.")
 
 # 10. Save to CSV
+# Create the 'data' directory if it doesn't exist
+os.makedirs(os.path.dirname(output_csv_file), exist_ok=True)
+
 if not combined_df.empty:
     combined_df.to_csv(output_csv_file, index=False)
     print(f"\nFinal combined data saved successfully to '{output_csv_file}'")
