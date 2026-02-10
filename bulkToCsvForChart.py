@@ -5,7 +5,7 @@ import json
 # 1. Define constants and file paths
 output_csv_file_name = 'data/nse_eq_combined_deliveryPerc.csv'
 chart_dir = 'Chart'
-symbol_info_json_path = os.path.join(chart_dir, '0_symbolInfo.json') # Changed to 0_symbolInfo.json
+symbol_info_json_path = os.path.join(chart_dir, '0_symbolInfo.json')
 
 # 2. Load the nse_eq_combined_deliveryPerc.csv file into a pandas DataFrame
 df = pd.read_csv(output_csv_file_name, parse_dates=['TRADE_DATE'], dtype={'DELIV_PER': str})
@@ -34,7 +34,7 @@ if os.path.exists(symbol_info_json_path):
             symbol_info_data = json.load(f)
             if 'LastDateScanned' in symbol_info_data:
                 last_scanned_date = pd.to_datetime(symbol_info_data['LastDateScanned'])
-                print(f"Found LastDateScanned: {last_scanned_date.strftime('%Y-%m-%d')}")
+                print(f"Found LastDateScanned in '{symbol_info_json_path}': {last_scanned_date.strftime('%Y-%m-%d')}")
         except json.JSONDecodeError:
             print(f"Warning: Could not decode existing '{symbol_info_json_path}'. Starting fresh.")
         except KeyError:
@@ -48,7 +48,7 @@ original_df_for_json = df.copy()
 # 5. Filter Data for Incremental Updates
 if last_scanned_date is not None:
     df_filtered = df[df['TRADE_DATE'] > last_scanned_date].copy()
-    print(f"Filtered data to include only records after {last_scanned_date.strftime('%Y-%m-%d')}.")
+    print(f"Filtered data to include only records strictly AFTER {last_scanned_date.strftime('%Y-%m-%d')}.")
 else:
     df_filtered = df.copy()
     print("No LastDateScanned found. Processing entire dataset for the first time.")
@@ -57,6 +57,13 @@ if df_filtered.empty:
     print("No new data to process. Exiting incremental update.")
 else:
     print(f"Found {len(df_filtered)} new records to process.")
+    print(f"Min TRADE_DATE in filtered data: {df_filtered['TRADE_DATE'].min().strftime('%Y-%m-%d')}")
+    print(f"Max TRADE_DATE in filtered data: {df_filtered['TRADE_DATE'].max().strftime('%Y-%m-%d')}")
+
+    # Log entries found for each date in filtered data
+    print("New entries found per date (filtered data):")
+    for date, count in df_filtered['TRADE_DATE'].value_counts().sort_index().items():
+        print(f"  {date.strftime('%Y-%m-%d')}: {count} entries")
 
     # 6. Transform Data for New CSV Format
     df_filtered['Date'] = df_filtered['TRADE_DATE'].dt.strftime('%d%m%Y')
