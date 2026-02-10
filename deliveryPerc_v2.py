@@ -7,7 +7,7 @@ import time
 import os
 
 # 2. Define constants
-output_csv_file = 'bulk/nse_eq_combined_deliveryPerc.csv'
+output_csv_file = 'data/nse_eq_combined_deliveryPerc.csv'
 initial_start_date_str = '2019-10-01'
 holidays_md = [(1, 26), (8, 15), (10, 2)]  # (month, day) for Jan 26, Aug 15, Oct 2
 
