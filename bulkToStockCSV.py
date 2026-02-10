@@ -23,6 +23,10 @@ print("Ensured 'symbol_info' directory exists.")
 print("Data loaded and prepared. Directories created.")
 
 # 6. Transform Data for OHLCV Format
+# Ensure TRADE_DATE is datetime
+df['TRADE_DATE'] = pd.to_datetime(df['TRADE_DATE'], errors='coerce')
+df = df.dropna(subset=['TRADE_DATE'])
+
 # Create a new column named `date` by formatting `TRADE_DATE` as YYYYMMDDT
 df['date'] = df['TRADE_DATE'].dt.strftime('%Y%m%dT')
 
