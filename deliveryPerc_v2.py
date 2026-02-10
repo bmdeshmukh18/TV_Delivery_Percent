@@ -58,11 +58,13 @@ if not os.path.exists(output_csv_file):
 else:
     print(f"'{output_csv_file}' found. Checking for new data...")
 
+    # When reading, let pandas infer date format more broadly initially for TRADE_DATE
     combined_df = pd.read_csv(output_csv_file, parse_dates=['TRADE_DATE'], on_bad_lines='skip', dtype=column_dtypes_for_read)
     combined_df = convert_numeric_columns(combined_df)
 
     if 'TRADE_DATE' in combined_df.columns and not combined_df['TRADE_DATE'].empty:
-        combined_df['TRADE_DATE'] = pd.to_datetime(combined_df['TRADE_DATE'], format='%Y-%m-%d') # Explicitly specify format
+        # Convert to datetime, inferring format, and then normalize to keep only date
+        combined_df['TRADE_DATE'] = pd.to_datetime(combined_df['TRADE_DATE'], errors='coerce').dt.normalize()
         latest_existing_date = combined_df['TRADE_DATE'].max().normalize() # Normalize for accurate comparison
         print(f"Latest existing data is for: {latest_existing_date.strftime('%Y-%m-%d')}")
 
@@ -144,8 +146,13 @@ else:
 # 9. Merge with existing data
 # When reading existing combined_df, ensure only required columns are loaded if it exists
 if os.path.exists(output_csv_file):
+    # Re-read with parse_dates to ensure proper type handling, and then normalize
     temp_combined_df = pd.read_csv(output_csv_file, parse_dates=['TRADE_DATE'], on_bad_lines='skip', dtype=column_dtypes_for_read)
     temp_combined_df = convert_numeric_columns(temp_combined_df)
+    # Ensure TRADE_DATE is normalized after reading from CSV
+    if 'TRADE_DATE' in temp_combined_df.columns and not temp_combined_df['TRADE_DATE'].empty:
+        temp_combined_df['TRADE_DATE'] = pd.to_datetime(temp_combined_df['TRADE_DATE'], errors='coerce').dt.normalize()
+
     # Filter to keep only the desired columns from existing data too
     existing_required_columns = ['SYMBOL', 'TRADE_DATE', 'DELIV_PER']
     if all(col in temp_combined_df.columns for col in existing_required_columns):
