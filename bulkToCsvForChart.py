@@ -3,7 +3,7 @@ import os
 import json
 
 # 1. Define constants and file paths
-output_csv_file_name = 'data/nse_eq_combined_deliveryPerc.csv'
+output_csv_file_name = 'data/nse_eq_combined_deliveryPerc (3).csv' # Corrected file name
 chart_dir = 'Chart'
 symbol_info_json_path = os.path.join(chart_dir, '0_symbolInfo.json')
 
