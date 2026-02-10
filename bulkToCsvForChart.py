@@ -18,6 +18,10 @@ df['DELIV_PER'] = df['DELIV_PER'].fillna(0.0)
 df['TRADE_DATE'] = pd.to_datetime(df['TRADE_DATE'], errors='coerce')
 df = df.dropna(subset=['TRADE_DATE']) # Drop rows where TRADE_DATE couldn't be parsed
 
+# --- Added for debugging: Print max date in loaded DataFrame ---
+print(f"Max TRADE_DATE in loaded '{output_csv_file_name}': {df['TRADE_DATE'].max().strftime('%Y-%m-%d')}")
+# -----------------------------------------------------------------
+
 # 3. Create the 'Chart' directory if it does not already exist
 os.makedirs(chart_dir, exist_ok=True)
 print(f"Ensured '{chart_dir}' directory exists.")
