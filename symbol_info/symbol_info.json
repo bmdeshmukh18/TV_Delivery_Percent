@@ -2998,7 +2998,9 @@
         "BUILDPRO",
         "SHADOWFAX",
         "UEL",
-        "CCAVENUE"
+        "CCAVENUE",
+        "ARIS",
+        "SIGMAADV"
     ],
     "pricescale": 2,
     "description": [
@@ -6000,6 +6002,8 @@
         "BUILDPRO",
         "SHADOWFAX",
         "UEL",
-        "CCAVENUE"
+        "CCAVENUE",
+        "ARIS",
+        "SIGMAADV"
     ]
 }
