@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0   # required for commits/pushes
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -33,25 +36,29 @@ jobs:
 
       - name: Commit and push generated file
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          
-          # Check if the CSV file exists and has changes
-          if [ -f "data/nse_eq_combined_deliveryPerc.csv" ]; then
-            if ! git diff --quiet data/nse_eq_combined_deliveryPerc.csv; then
-              git add data/nse_eq_combined_deliveryPerc.csv
-              git commit -m "Update delivery percentage data - $(date +%Y-%m-%d)"
+          set -e
 
-              # Pull latest changes first to avoid rejection
-              git pull --rebase origin main
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
 
-              #Push code
-              git push origin main
-            else
-              echo "No changes to CSV file"
-            fi
+          echo "Workspace content:"
+          ls -la
+          echo "Data folder:"
+          ls -la data || true
+
+          CSV_PATH="data/nse_eq_combined_deliveryPerc.csv"
+
+          # Always attempt to add file – works for new + updated files
+          git add -f "$CSV_PATH"
+
+          # Commit only if there are actually changes
+          if ! git diff --cached --quiet; then
+            git commit -m "Update delivery percentage CSV – $(date +%Y-%m-%d)"
+            git push origin main
+            echo "CSV committed and pushed."
           else
-            echo "CSV file not found in working directory"
+            echo "No change in CSV. Nothing to commit."
           fi
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
