@@ -3000,7 +3000,8 @@
         "UEL",
         "CCAVENUE",
         "ARIS",
-        "SIGMAADV"
+        "SIGMAADV",
+        "GROWWPSE"
     ],
     "pricescale": 2,
     "description": [
@@ -6004,6 +6005,7 @@
         "UEL",
         "CCAVENUE",
         "ARIS",
-        "SIGMAADV"
+        "SIGMAADV",
+        "GROWWPSE"
     ]
 }
