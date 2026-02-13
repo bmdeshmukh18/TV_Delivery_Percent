@@ -8,7 +8,7 @@ import os
 
 # 2. Define constants
 output_csv_file = 'data/nse_eq_combined_deliveryPerc.csv'
-initial_start_date_str = '2019-10-01'
+initial_start_date_str = '2026-02-01'
 holidays_md = [(1, 26), (8, 15), (10, 2)]  # (month, day) for Jan 26, Aug 15, Oct 2
 
 # 3. Define a helper function to generate valid dates
@@ -35,7 +35,7 @@ def generate_valid_dates(start, end, holidays_month_day):
 
 # Helper function to convert columns to numeric, coercing errors
 def convert_numeric_columns(df):
-    for col in ['DELIV_QTY', 'DELIV_PER']:
+    for col in ['DELIV_QTY', 'DELIV_PER', 'PREV_CLOSE', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE']:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
     return df
@@ -45,7 +45,7 @@ newly_fetched_data_frames = []
 combined_df = pd.DataFrame()
 
 # Define dtypes for problematic columns to read them as strings
-column_dtypes_for_read = {col: str for col in ['DELIV_QTY', 'DELIV_PER']}
+column_dtypes_for_read = {col: str for col in ['DELIV_QTY', 'DELIV_PER', 'PREV_CLOSE', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE']}
 
 # Current date (normalized to midnight)
 today_date_normalized = pd.Timestamp.now().normalize()
@@ -117,16 +117,21 @@ for date_obj in valid_dates_to_fetch:
         if not df_filtered_daily.empty:
             df_filtered_daily = df_filtered_daily.copy()
             df_filtered_daily.loc[:, 'TRADE_DATE'] = date_obj.strftime('%Y-%m-%d')
-            # Select only the required columns: SYMBOL, TRADE_DATE, DELIV_PER
-            required_columns = ['SYMBOL', 'TRADE_DATE', 'DELIV_PER']
+            # Select only the required columns: SYMBOL, TRADE_DATE, DELIV_PER and the new price columns
+            required_columns = ['SYMBOL', 'TRADE_DATE', 'DELIV_PER',
+                                'PREV_CLOSE', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE']
             # Ensure all required columns exist before selecting to avoid KeyError
             existing_required_columns = [col for col in required_columns if col in df_filtered_daily.columns]
             if len(existing_required_columns) == len(required_columns):
                 df_filtered_daily = df_filtered_daily[existing_required_columns]
+                # Ensure numeric conversion again for safety
+                df_filtered_daily = convert_numeric_columns(df_filtered_daily)
+                # Add Change_Percentage column rounded to 2 decimals
+                df_filtered_daily['Change_Percentage'] = (((df_filtered_daily['CLOSE_PRICE'] - df_filtered_daily['PREV_CLOSE']) / df_filtered_daily['PREV_CLOSE']) * 100).round(2)
                 newly_fetched_data_frames.append(df_filtered_daily)
                 print(f"Successfully processed and added data for {date_obj.strftime('%Y-%m-%d')}. Rows: {len(df_filtered_daily)}")
             else:
-                print(f"Missing one or more required columns (SYMBOL, TRADE_DATE, DELIV_PER) for {date_obj.strftime('%Y-%m-%d')}. Skipping.")
+                print(f"Missing one or more required columns (SYMBOL, TRADE_DATE, DELIV_PER, PREV_CLOSE, OPEN_PRICE, HIGH_PRICE, LOW_PRICE, CLOSE_PRICE) for {date_obj.strftime('%Y-%m-%d')}. Skipping.")
 
     except requests.exceptions.RequestException as e:
         print(f"Error downloading data for {date_obj.strftime('%Y-%m-%d')}: {e}")
@@ -154,12 +159,25 @@ if os.path.exists(output_csv_file):
         temp_combined_df['TRADE_DATE'] = pd.to_datetime(temp_combined_df['TRADE_DATE'], errors='coerce').dt.normalize()
 
     # Filter to keep only the desired columns from existing data too
-    existing_required_columns = ['SYMBOL', 'TRADE_DATE', 'DELIV_PER']
+    existing_required_columns = ['SYMBOL', 'TRADE_DATE', 'DELIV_PER',
+                                 'PREV_CLOSE', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE', 'Change_Percentage']
     if all(col in temp_combined_df.columns for col in existing_required_columns):
         combined_df = temp_combined_df[existing_required_columns]
     else:
-        print("Warning: Existing CSV does not contain all required columns. Starting fresh or merging only available columns.")
-        combined_df = pd.DataFrame(columns=['SYMBOL', 'TRADE_DATE', 'DELIV_PER'])
+        # If Change_Percentage is missing but price columns exist, compute it
+        if all(col in temp_combined_df.columns for col in ['SYMBOL', 'TRADE_DATE', 'DELIV_PER', 'PREV_CLOSE', 'CLOSE_PRICE']):
+            temp_combined_df = temp_combined_df.copy()
+            temp_combined_df['Change_Percentage'] = (((pd.to_numeric(temp_combined_df['CLOSE_PRICE'], errors='coerce') - pd.to_numeric(temp_combined_df['PREV_CLOSE'], errors='coerce')) / pd.to_numeric(temp_combined_df['PREV_CLOSE'], errors='coerce')) * 100).round(2)
+            # Ensure all expected columns exist; if some price columns are missing, add them as NaN
+            for col in ['PREV_CLOSE', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE', 'Change_Percentage']:
+                if col not in temp_combined_df.columns:
+                    temp_combined_df[col] = np.nan
+            combined_df = temp_combined_df[['SYMBOL', 'TRADE_DATE', 'DELIV_PER', 'PREV_CLOSE', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE', 'Change_Percentage']]
+        else:
+            print("Warning: Existing CSV does not contain all required columns. Starting fresh or merging only available columns.")
+            # Start with empty DataFrame with the full set of columns
+            combined_df = pd.DataFrame(columns=['SYMBOL', 'TRADE_DATE', 'DELIV_PER',
+                                                'PREV_CLOSE', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE', 'Change_Percentage'])
 
 if not combined_df.empty and not new_data_df.empty:
     combined_df = pd.concat([combined_df, new_data_df], ignore_index=True)
@@ -172,11 +190,31 @@ elif not combined_df.empty and new_data_df.empty:
 else:
     print("No data to process or combine.")
 
+# Ensure numeric types for price columns and compute Change_Percentage if missing or NaN
+if not combined_df.empty:
+    combined_df = convert_numeric_columns(combined_df)
+    # If Change_Percentage column missing, create it (rounded to 2 decimals)
+    if 'Change_Percentage' not in combined_df.columns:
+        combined_df['Change_Percentage'] = (((combined_df['CLOSE_PRICE'] - combined_df['PREV_CLOSE']) / combined_df['PREV_CLOSE']) * 100).round(2)
+    else:
+        # Recompute where NaN and round to 2 decimals
+        mask = combined_df['Change_Percentage'].isna()
+        if mask.any():
+            combined_df.loc[mask, 'Change_Percentage'] = (((combined_df.loc[mask, 'CLOSE_PRICE'] - combined_df.loc[mask, 'PREV_CLOSE']) / combined_df.loc[mask, 'PREV_CLOSE']) * 100).round(2)
+
 # 10. Save to CSV
 # Create the 'data' directory if it doesn't exist
 os.makedirs(os.path.dirname(output_csv_file), exist_ok=True)
 
+# Ensure final column order
+final_columns = ['SYMBOL', 'TRADE_DATE', 'DELIV_PER', 'PREV_CLOSE', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE', 'Change_Percentage']
+
 if not combined_df.empty:
+    # Add any missing final columns as NaN to maintain consistent schema
+    for col in final_columns:
+        if col not in combined_df.columns:
+            combined_df[col] = np.nan
+    combined_df = combined_df[final_columns]
     combined_df.to_csv(output_csv_file, index=False)
     print(f"\nFinal combined data saved successfully to '{output_csv_file}'")
 else:
