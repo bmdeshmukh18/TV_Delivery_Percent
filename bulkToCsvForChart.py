@@ -69,10 +69,12 @@ else:
     df_filtered['Date'] = df_filtered['TRADE_DATE'].dt.strftime('%d%m%Y')
     df_filtered['DelPerc'] = df_filtered['DELIV_PER']
 
-    # Select only 'SYMBOL', 'Date', and 'DelPerc' columns
-    df_transformed = df_filtered[['SYMBOL', 'Date', 'DelPerc']]
+    # Select required columns for stock CSVs
+    df_transformed = df_filtered[['SYMBOL', 'Date', 'DelPerc',
+                                  'PREV_CLOSE', 'OPEN_PRICE', 'HIGH_PRICE',
+                                  'LOW_PRICE', 'CLOSE_PRICE', 'Change_Percentage']]
 
-    print("Data transformed for individual stock CSVs.")
+    print("Data transformed for individual stock CSVs with additional price columns.")
 
     # 7. Generate and Append Individual Stock CSVs
     grouped = df_transformed.groupby('SYMBOL')
@@ -82,22 +84,22 @@ else:
 
         if os.path.exists(output_file_path):
             # Load existing data
-            existing_df = pd.read_csv(output_file_path, dtype={'Date': str, 'DelPerc': float})
+            existing_df = pd.read_csv(output_file_path, dtype={'Date': str})
 
             # Concatenate new and existing data
-            # New data (symbol_df) takes precedence in case of duplicate dates because keep='last'
-            combined_df = pd.concat([existing_df, symbol_df[['Date', 'DelPerc']]]).drop_duplicates(subset=['Date'], keep='last')
+            combined_df = pd.concat([existing_df, symbol_df.drop(columns=['SYMBOL'])]) \
+                            .drop_duplicates(subset=['Date'], keep='last')
 
             # Sort by date for chronological order
             combined_df['Date'] = pd.to_datetime(combined_df['Date'], format='%d%m%Y')
             combined_df = combined_df.sort_values(by='Date').reset_index(drop=True)
-            combined_df['Date'] = combined_df['Date'].dt.strftime('%d%m%Y') # Convert back to DDMMYYYY
+            combined_df['Date'] = combined_df['Date'].dt.strftime('%d%m%Y')  # back to DDMMYYYY
 
             combined_df.to_csv(output_file_path, index=False)
             print(f"Appended new data to '{output_file_path}'.")
         else:
-            # If file doesn't exist, just save the new data
-            symbol_df[['Date', 'DelPerc']].to_csv(output_file_path, index=False)
+            # If file doesn't exist, just save the new data (excluding SYMBOL column)
+            symbol_df.drop(columns=['SYMBOL']).to_csv(output_file_path, index=False)
             print(f"Created new file '{output_file_path}'.")
 
     print(f"Generated/Appended {len(grouped)} individual stock CSVs in the '{chart_dir}' directory.")
