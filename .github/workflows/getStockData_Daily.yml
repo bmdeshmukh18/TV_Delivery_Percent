@@ -3,52 +3,72 @@ name: Script to getStockData
 on:
   workflow_dispatch:
   schedule:
-    # Example: run daily at 7 PM IST
-    - cron: '30 13 * * *'   # 13:30 UTC = 19:00 IST
+    # Daily at 7:00 PM IST (13:30 UTC)
+    - cron: '30 13 * * *'
 
+# Needed to push back to the repo
 permissions:
-  contents: write   # allow pushing commits
+  contents: write
+
+# Prevent overlapping runs of the same workflow/branch
+concurrency:
+  group: get-stock-data-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  run-secondary-script:
+  run-merged-script:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Kolkata   # Useful for logs/timestamps within the job
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # full history so we can pull/rebase
+          fetch-depth: 0  # full history for rebase pull
+          persist-credentials: true  # use GITHUB_TOKEN
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+          cache: 'pip'
 
+      # OPTIONAL: If you have a requirements.txt, keep this step.
+      # If your script doesn't need extra packages beyond stdlib, you can remove it.
       - name: Install dependencies
+        if: hashFiles('**/requirements.txt') != ''
         run: pip install -r requirements.txt
 
-      - name: Run secondary script
-        run: python getStockData_v1.py
+      - name: Run merged stock data script
+        # ⬇️ Replace the script name below with your merged script’s filename
+        run: |
+          python getStockData_v1.py
 
-      - name: Commit and push generated directories/files
+      - name: Configure git user
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          # In case GitHub marks the workspace as unsafe
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-          # Add the new directories and files created by the script
+      - name: Add generated files
+        run: |
+          # Ensure the directory exists (script typically creates it, but just in case)
+          mkdir -p StockData
+
+          # Add all changes (new/updated/removed files)
           git add -A
 
-          # Commit only if there are changes
+      - name: Commit and push if changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           if ! git diff --cached --quiet; then
-            git commit -m "Add/update generated data - $(date +%Y-%m-%d)"
-
-            # Pull latest changes to avoid push rejection
-            git pull --rebase origin main
-
-            # Push to main branch
-            git push origin main
+            git commit -m "StockData update - $(date +'%Y-%m-%d %H:%M:%S %Z')"
+            # Rebase on latest main to minimize push conflicts
+            git pull --rebase origin main || true
+            git push origin HEAD:main
           else
             echo "No changes to commit"
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
