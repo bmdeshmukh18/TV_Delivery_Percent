@@ -1,188 +1,142 @@
-import os
-import json
 import pandas as pd
 import requests
 import io
 from datetime import datetime, timedelta
+import numpy as np
+import time
+import os
+import json
 
-# -------------------------------
-# CONFIGURATION
-# -------------------------------
-OUTPUT_DIR = "StockData"
-SYMBOL_INFO_FILE = os.path.join(OUTPUT_DIR, "0_symbolInfo.json")
-INITIAL_START_DATE = "2019-10-01"
+# 2. Define constants
+chart_dir = 'StockData'
+symbol_info_json_path = os.path.join(chart_dir, '0_symbolInfo.json')
+initial_start_date_str = '2019-10-01'
+holidays_md = [(1, 26), (8, 15), (10, 2)]  # (month, day)
 
-# Indian holidays (fixed dates)
-HOLIDAYS = [(1, 26), (8, 15), (10, 2)]
-
-
-# -------------------------------
-# UTILITY FUNCTIONS
-# -------------------------------
-
-def generate_valid_dates(start_date, end_date, holidays):
-    """Generate working days excluding weekends and holidays."""
-    all_days = pd.date_range(start=start_date, end=end_date, freq="D")
-    working_days = all_days[all_days.dayofweek < 5]
-
-    holiday_dates = []
-    for year in range(start_date.year, end_date.year + 1):
-        for month, day in holidays:
+# 3. Helper functions
+def generate_valid_dates(start, end, holidays_month_day):
+    all_dates = pd.date_range(start=start, end=end, freq='D')
+    working_days = all_dates[all_dates.dayofweek < 5]
+    holidays = []
+    for year in range(start.year, end.year + 1):
+        for month, day in holidays_month_day:
             try:
-                holiday_dates.append(pd.Timestamp(f"{year}-{month:02d}-{day:02d}"))
+                holidays.append(pd.to_datetime(f'{year}-{month:02d}-{day:02d}'))
             except ValueError:
                 pass
+    holidays_dt_index = pd.DatetimeIndex(holidays).normalize()
+    return working_days[~working_days.isin(holidays_dt_index)]
 
-    holiday_index = pd.DatetimeIndex(holiday_dates).normalize()
-    return working_days[~working_days.isin(holiday_index)]
+def convert_numeric_columns(df):
+    for col in ['DELIV_QTY','DELIV_PER','PREV_CLOSE','OPEN_PRICE','HIGH_PRICE','LOW_PRICE','CLOSE_PRICE']:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+    return df
 
+# 5. Initialize
+newly_fetched_data_frames = []
+combined_df = pd.DataFrame()
+column_dtypes_for_read = {col: str for col in ['DELIV_QTY','DELIV_PER','PREV_CLOSE','OPEN_PRICE','HIGH_PRICE','LOW_PRICE','CLOSE_PRICE']}
+today_date_normalized = pd.Timestamp.now().normalize()
 
-def load_last_scan_date():
-    """Read LastDateScanned from JSON."""
-    if not os.path.exists(SYMBOL_INFO_FILE):
-        return None
+# Always perform initial fetch (no combined CSV anymore)
+start_date = pd.to_datetime(initial_start_date_str)
+valid_dates_to_fetch = generate_valid_dates(start_date, today_date_normalized, holidays_md)
 
-    try:
-        with open(SYMBOL_INFO_FILE, "r") as f:
-            data = json.load(f)
-            return pd.to_datetime(data.get("LastDateScanned"))
-    except Exception:
-        return None
-
-
-def save_symbol_info(symbols, last_date):
-    """Write JSON file with symbol list and last scanned date."""
-    data = {
-        "symbols": sorted(list(symbols)),
-        "pricescale": 2,
-        "LastDateScanned": last_date.strftime("%Y-%m-%d")
-    }
-    with open(SYMBOL_INFO_FILE, "w") as f:
-        json.dump(data, f, indent=4)
-
-
-def fetch_nse_csv(date_obj):
-    """Download NSE bhavcopy file."""
-    date_str = date_obj.strftime("%d%m%Y")
-    url = f"https://archives.nseindia.com/products/content/sec_bhavdata_full_{date_str}.csv"
-
+# 7. Fetch loop
+for date_obj in valid_dates_to_fetch:
+    formatted_date = date_obj.strftime('%d%m%Y')
+    url = f"https://archives.nseindia.com/products/content/sec_bhavdata_full_{formatted_date}.csv"
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
+        if not response.text.strip() or "Error occured" in response.text or "No Data" in response.text:
+            print(f"No data for {date_obj.strftime('%Y-%m-%d')}. Skipping.")
+            continue
+        df_daily = pd.read_csv(io.StringIO(response.text), on_bad_lines='skip', dtype=column_dtypes_for_read)
+        df_daily = convert_numeric_columns(df_daily)
+        if df_daily.empty: continue
+        df_daily.columns = df_daily.columns.str.strip()
+        if 'SERIES' not in df_daily.columns: continue
+        df_filtered_daily = df_daily[df_daily['SERIES'].str.strip() == 'EQ']
+        if df_filtered_daily.empty: continue
+        df_filtered_daily = df_filtered_daily.copy()
+        df_filtered_daily.loc[:, 'TRADE_DATE'] = date_obj.strftime('%Y-%m-%d')
+        required_columns = ['SYMBOL','TRADE_DATE','DELIV_PER','PREV_CLOSE','OPEN_PRICE','HIGH_PRICE','LOW_PRICE','CLOSE_PRICE']
+        if all(col in df_filtered_daily.columns for col in required_columns):
+            df_filtered_daily = df_filtered_daily[required_columns]
+            df_filtered_daily = convert_numeric_columns(df_filtered_daily)
+            df_filtered_daily['Change_Percentage'] = (((df_filtered_daily['CLOSE_PRICE'] - df_filtered_daily['PREV_CLOSE']) / df_filtered_daily['PREV_CLOSE']) * 100).round(2)
+            newly_fetched_data_frames.append(df_filtered_daily)
+            print(f"Processed {date_obj.strftime('%Y-%m-%d')}, rows: {len(df_filtered_daily)}")
+    except Exception as e:
+        print(f"Error for {date_obj.strftime('%Y-%m-%d')}: {e}")
+    time.sleep(0.2)
 
-        if "Error" in response.text or "No Data" in response.text or not response.text.strip():
-            return None
+# 8. Combine
+if newly_fetched_data_frames:
+    combined_df = pd.concat(newly_fetched_data_frames, ignore_index=True)
+    print("Combined all newly fetched data.")
+else:
+    print("No data fetched.")
+    combined_df = pd.DataFrame()
 
-        return pd.read_csv(io.StringIO(response.text), on_bad_lines="skip")
+# --- New Part: Directly generate per-symbol CSVs ---
+if not combined_df.empty:
+    # Ensure Chart directory exists
+    os.makedirs(chart_dir, exist_ok=True)
 
-    except Exception:
-        return None
+    # Load last scanned date if exists
+    last_scanned_date = None
+    if os.path.exists(symbol_info_json_path):
+        try:
+            with open(symbol_info_json_path,'r') as f:
+                symbol_info_data = json.load(f)
+                if 'LastDateScanned' in symbol_info_data:
+                    last_scanned_date = pd.to_datetime(symbol_info_data['LastDateScanned'])
+                    print(f"LastDateScanned: {last_scanned_date.strftime('%Y-%m-%d')}")
+        except Exception:
+            print("Could not decode existing symbolInfo.json, starting fresh.")
 
-
-# -------------------------------
-# MAIN PROCESS
-# -------------------------------
-
-def main():
-    # Create output folder
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-    # Determine start date
-    last_scanned_date = load_last_scan_date()
-    today = pd.Timestamp.now().normalize()
-
-    if last_scanned_date is None:
-        start_date = pd.to_datetime(INITIAL_START_DATE)
-        print("Performing full initial fetch...")
+    # Filter incremental
+    if last_scanned_date is not None:
+        df_filtered = combined_df[pd.to_datetime(combined_df['TRADE_DATE']) > last_scanned_date].copy()
     else:
-        start_date = last_scanned_date + timedelta(days=1)
-        print(f"Fetching from {start_date.date()} onward...")
+        df_filtered = combined_df.copy()
 
-    if start_date > today:
-        print("Nothing to fetch — data already up‑to‑date.")
-        return
+    if df_filtered.empty:
+        print("No new data to process for individual CSVs.")
+    else:
+        df_filtered['Date'] = pd.to_datetime(df_filtered['TRADE_DATE']).dt.strftime('%d%m%Y')
+        df_filtered['DelPerc'] = df_filtered['DELIV_PER']
+        df_transformed = df_filtered[['SYMBOL','Date','DelPerc','PREV_CLOSE','OPEN_PRICE','HIGH_PRICE','LOW_PRICE','CLOSE_PRICE','Change_Percentage']]
+        grouped = df_transformed.groupby('SYMBOL')
 
-    valid_dates = generate_valid_dates(start_date, today, HOLIDAYS)
-    all_symbols = set()
-
-    for date_obj in valid_dates:
-        print(f"Processing {date_obj.date()}...")
-
-        df = fetch_nse_csv(date_obj)
-        if df is None or df.empty:
-            print(f"Skipping {date_obj.date()} — no data.")
-            continue
-
-        df.columns = df.columns.str.strip()
-
-        # Ensure required columns exist
-        required_cols = [
-            "SERIES", "SYMBOL", "DATE1",
-            "OPEN_PRICE", "HIGH_PRICE", "LOW_PRICE",
-            "CLOSE_PRICE", "PREV_CLOSE", "DELIV_PER"
-        ]
-
-        if not all(col in df.columns for col in required_cols):
-            print(f"Missing required columns on {date_obj.date()} — skipped.")
-            continue
-
-        # Filter EQ only
-        df = df[df["SERIES"].str.strip() == "EQ"].copy()
-        if df.empty:
-            continue
-
-        # Prepare cleaned data
-        df["TRADE_DATE"] = pd.to_datetime(df["DATE1"], errors="coerce")
-        df = df.dropna(subset=["TRADE_DATE"])
-
-        df["TRADE_DATE"] = df["TRADE_DATE"].dt.strftime("%d%m%Y")
-
-        # Calculate CHANGE_PERCENT
-        df["CHANGE_PERCENT"] = (
-            (df["CLOSE_PRICE"] - df["PREV_CLOSE"]) / df["PREV_CLOSE"] * 100
-        )
-
-        # Keep only cleaned columns
-        df = df.rename(columns={
-            "OPEN_PRICE": "OPEN",
-            "HIGH_PRICE": "HIGH",
-            "LOW_PRICE": "LOW",
-            "CLOSE_PRICE": "CLOSE",
-            "DELIV_PER": "DELIVERY_PERCENT"
-        })
-
-        df = df[[
-            "SYMBOL", "TRADE_DATE", "OPEN", "HIGH", "LOW",
-            "CLOSE", "DELIVERY_PERCENT", "CHANGE_PERCENT"
-        ]]
-
-        # Store per‑symbol CSV files
-        for symbol, sdf in df.groupby("SYMBOL"):
-            symbol_file = os.path.join(OUTPUT_DIR, f"{symbol}.csv")
-            all_symbols.add(symbol)
-
-            if os.path.exists(symbol_file):
-                existing = pd.read_csv(symbol_file, dtype=str)
-                combined = pd.concat([existing, sdf], ignore_index=True)
-                combined = combined.drop_duplicates(subset=["TRADE_DATE"], keep="last")
+        for symbol, symbol_df in grouped:
+            output_file_path = os.path.join(chart_dir, f'{symbol}.csv')
+            if os.path.exists(output_file_path):
+                existing_df = pd.read_csv(output_file_path, dtype={'Date': str})
+                combined_symbol_df = pd.concat([existing_df, symbol_df.drop(columns=['SYMBOL'])]) \
+                                        .drop_duplicates(subset=['Date'], keep='last')
+                combined_symbol_df['Date'] = pd.to_datetime(combined_symbol_df['Date'], format='%d%m%Y')
+                combined_symbol_df = combined_symbol_df.sort_values(by='Date').reset_index(drop=True)
+                combined_symbol_df['Date'] = combined_symbol_df['Date'].dt.strftime('%d%m%Y')
+                combined_symbol_df.to_csv(output_file_path, index=False)
+                print(f"Updated {output_file_path}")
             else:
-                combined = sdf.copy()
+                symbol_df.drop(columns=['SYMBOL']).to_csv(output_file_path, index=False)
+                print(f"Created {output_file_path}")
 
-            # Preserve date format DDMMYYYY
-            combined["TRADE_DATE"] = combined["TRADE_DATE"].astype(str)
-            combined = combined.sort_values(by="TRADE_DATE")
-
-            combined.to_csv(symbol_file, index=False)
-
-        print(f"Saved {len(df)} rows for {date_obj.date()}.")
-
-    # Update JSON metadata
-    latest_date = valid_dates[-1] if len(valid_dates) else last_scanned_date
-    if latest_date is not None:
-        save_symbol_info(all_symbols, latest_date)
-
-    print("\nProcessing completed successfully.")
-
-
-if __name__ == "__main__":
-    main()
+        # Update symbolInfo.json
+        unique_symbols = combined_df['SYMBOL'].unique().tolist()
+        latest_trade_date = pd.to_datetime(combined_df['TRADE_DATE']).max()
+        symbol_info_data_final = {
+            "symbol": unique_symbols,
+            "pricescale": 2,
+            "LastDateScanned": latest_trade_date.strftime('%Y-%m-%d')
+        }
+        with open(symbol_info_json_path,'w') as f:
+            json.dump(symbol_info_data_final,f,indent=4)
+        print(f"Updated {symbol_info_json_path} with {len(unique_symbols)} symbols.")
+else:
+    print("No combined data available to generate per-symbol CSVs.")
