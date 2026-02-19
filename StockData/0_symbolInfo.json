@@ -3005,8 +3005,10 @@
         "AYE",
         "FRACTAL",
         "HEALTHCARE",
-        "INFRA"
+        "INFRA",
+        "CEINSYS",
+        "DEFENCE"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-02-18"
+    "LastDateScanned": "2026-02-19"
 }
