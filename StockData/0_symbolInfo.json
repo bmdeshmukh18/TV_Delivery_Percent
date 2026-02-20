@@ -3007,8 +3007,9 @@
         "HEALTHCARE",
         "INFRA",
         "CEINSYS",
-        "DEFENCE"
+        "DEFENCE",
+        "ABSLMSCIN"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-02-19"
+    "LastDateScanned": "2026-02-20"
 }
