@@ -3008,8 +3008,9 @@
         "INFRA",
         "CEINSYS",
         "DEFENCE",
-        "ABSLMSCIN"
+        "ABSLMSCIN",
+        "AQYLON"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-02-20"
+    "LastDateScanned": "2026-02-23"
 }
