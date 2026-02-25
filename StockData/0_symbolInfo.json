@@ -3010,8 +3010,10 @@
         "DEFENCE",
         "ABSLMSCIN",
         "AQYLON",
-        "HALDER"
+        "HALDER",
+        "AARNAV",
+        "TCC"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-02-24"
+    "LastDateScanned": "2026-02-25"
 }
