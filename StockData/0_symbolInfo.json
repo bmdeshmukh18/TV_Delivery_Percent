@@ -3016,8 +3016,12 @@
         "LTM",
         "AONESILVER",
         "CLEANMAX",
-        "KWIL"
+        "KWIL",
+        "ABSL10BANK",
+        "DCMSIL",
+        "DSFCL",
+        "PNGSREVA"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-03-03"
+    "LastDateScanned": "2026-03-04"
 }
