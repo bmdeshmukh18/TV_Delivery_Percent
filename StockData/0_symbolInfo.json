@@ -3020,8 +3020,10 @@
         "ABSL10BANK",
         "DCMSIL",
         "DSFCL",
-        "PNGSREVA"
+        "PNGSREVA",
+        "GROWWHOSPI",
+        "OMNI"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-03-04"
+    "LastDateScanned": "2026-03-05"
 }
