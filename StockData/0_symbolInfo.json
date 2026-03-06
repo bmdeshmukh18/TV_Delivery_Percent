@@ -1948,11 +1948,11 @@
         "SMLT",
         "RPPL",
         "TARSONS",
+        "BBOX",
+        "DHARAMSI",
         "EQUIPPP",
         "GOCOLORS",
         "SIGACHI",
-        "DHARAMSI",
-        "BBOX",
         "ASIANENE",
         "SHIVALIK",
         "MAHKTECH",
@@ -3022,8 +3022,9 @@
         "DSFCL",
         "PNGSREVA",
         "GROWWHOSPI",
-        "OMNI"
+        "OMNI",
+        "SBIMIDMOM"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-03-05"
+    "LastDateScanned": "2026-03-06"
 }
