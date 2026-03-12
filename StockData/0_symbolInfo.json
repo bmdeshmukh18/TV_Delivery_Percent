@@ -3026,8 +3026,11 @@
         "SBIMIDMOM",
         "INA",
         "SEDEMAC",
-        "VITAL"
+        "VITAL",
+        "AEPL",
+        "BANK10ADD",
+        "KOTYARK"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-03-11"
+    "LastDateScanned": "2026-03-12"
 }
