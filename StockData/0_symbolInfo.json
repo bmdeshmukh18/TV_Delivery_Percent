@@ -3037,8 +3037,12 @@
         "SINGERIND",
         "GICL",
         "INNOVISION",
-        "GSPCROP"
+        "GSPCROP",
+        "BCPL",
+        "GROWWPSUBK",
+        "HSBCGOLD",
+        "VALUE"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-03-26"
+    "LastDateScanned": "2026-03-27"
 }
