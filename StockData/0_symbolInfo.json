@@ -3041,8 +3041,9 @@
         "BCPL",
         "GROWWPSUBK",
         "HSBCGOLD",
-        "VALUE"
+        "VALUE",
+        "CMPDI"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-03-27"
+    "LastDateScanned": "2026-03-30"
 }
