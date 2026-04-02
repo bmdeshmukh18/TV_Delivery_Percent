@@ -3042,8 +3042,12 @@
         "GROWWPSUBK",
         "HSBCGOLD",
         "VALUE",
-        "CMPDI"
+        "CMPDI",
+        "AMIRCHAND",
+        "LANDSMILL",
+        "POWERICA",
+        "SAIPARENT"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-04-01"
+    "LastDateScanned": "2026-04-02"
 }
