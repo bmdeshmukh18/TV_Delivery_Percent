@@ -3143,8 +3143,13 @@
         "WELSPLSOL",
         "WIMPLAST",
         "WPIL",
-        "ZSARACOM"
+        "ZSARACOM",
+        "SAPPL",
+        "SONAL",
+        "TECHNVISN",
+        "THAKDEV",
+        "ZFSTEERING"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-04-20"
+    "LastDateScanned": "2026-04-21"
 }
