@@ -2601,9 +2601,9 @@
         "NORTHARC",
         "WCIL",
         "REVATHIEQU",
-        "ALLDIGI",
         "BALAJEE",
         "GROWWLIQID",
+        "ALLDIGI",
         "INDOUS",
         "SANOFICONR",
         "MOMENTUM50",
@@ -3156,5 +3156,5 @@
         "KISSHT"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-05-08"
+    "LastDateScanned": "2026-05-11"
 }
