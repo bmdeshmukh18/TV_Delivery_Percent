@@ -3155,8 +3155,11 @@
         "OMPOWER",
         "KISSHT",
         "FMCGADD",
-        "GRADIENTE"
+        "GRADIENTE",
+        "ENEXT50",
+        "SBISMLETF",
+        "SBIVALETF"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-05-22"
+    "LastDateScanned": "2026-05-25"
 }
