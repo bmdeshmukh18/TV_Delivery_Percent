@@ -3158,8 +3158,9 @@
         "GRADIENTE",
         "ENEXT50",
         "SBISMLETF",
-        "SBIVALETF"
+        "SBIVALETF",
+        "PVTBKGROWW"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-05-25"
+    "LastDateScanned": "2026-05-26"
 }
