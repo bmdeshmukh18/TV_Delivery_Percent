@@ -3159,8 +3159,9 @@
         "ENEXT50",
         "SBISMLETF",
         "SBIVALETF",
-        "PVTBKGROWW"
+        "PVTBKGROWW",
+        "MSCI360"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-05-28"
+    "LastDateScanned": "2026-05-29"
 }
