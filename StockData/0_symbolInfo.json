@@ -3160,8 +3160,9 @@
         "SBISMLETF",
         "SBIVALETF",
         "PVTBKGROWW",
-        "MSCI360"
+        "MSCI360",
+        "CMRGREEN"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-06-09"
+    "LastDateScanned": "2026-06-10"
 }
