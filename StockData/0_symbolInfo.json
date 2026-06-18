@@ -3161,8 +3161,10 @@
         "SBIVALETF",
         "PVTBKGROWW",
         "MSCI360",
-        "CMRGREEN"
+        "CMRGREEN",
+        "QMSMEDI",
+        "SMALLGROWW"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-06-17"
+    "LastDateScanned": "2026-06-18"
 }
