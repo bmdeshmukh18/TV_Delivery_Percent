@@ -3165,8 +3165,10 @@
         "QMSMEDI",
         "SMALLGROWW",
         "RMC",
-        "SMALLIETF"
+        "SMALLIETF",
+        "HEXAGON",
+        "TURTLEMINT"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-06-26"
+    "LastDateScanned": "2026-06-29"
 }
