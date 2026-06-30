@@ -3167,8 +3167,12 @@
         "RMC",
         "SMALLIETF",
         "HEXAGON",
-        "TURTLEMINT"
+        "TURTLEMINT",
+        "VAML",
+        "VEDPOWER",
+        "VISL",
+        "VOGL"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-06-29"
+    "LastDateScanned": "2026-06-30"
 }
