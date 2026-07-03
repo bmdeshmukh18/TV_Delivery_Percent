@@ -3174,8 +3174,17 @@
         "VOGL",
         "CORDELIA",
         "GUJENERGY",
-        "VOEPL"
+        "VOEPL",
+        "BNKETFAXIS",
+        "CONSUMAXIS",
+        "GOLDAXIS",
+        "HEALTHAXIS",
+        "ITAXIS",
+        "NIFTYAXIS",
+        "SENSEXAXIS",
+        "SILVERAXIS",
+        "VALUEAXIS"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-07-02"
+    "LastDateScanned": "2026-07-03"
 }
