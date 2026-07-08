@@ -1781,8 +1781,8 @@
         "INDIGOPNTS",
         "SECURKLOUD",
         "HOMEFIRST",
-        "OMINFRAL",
         "STOVEKRAFT",
+        "OMINFRAL",
         "AKG",
         "GENCON",
         "RAJMET",
@@ -3183,8 +3183,9 @@
         "NIFTYAXIS",
         "SENSEXAXIS",
         "SILVERAXIS",
-        "VALUEAXIS"
+        "VALUEAXIS",
+        "KNACK"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-07-07"
+    "LastDateScanned": "2026-07-08"
 }
