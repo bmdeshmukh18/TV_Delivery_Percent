@@ -3184,8 +3184,9 @@
         "SENSEXAXIS",
         "SILVERAXIS",
         "VALUEAXIS",
-        "KNACK"
+        "KNACK",
+        "GYFTR"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-07-09"
+    "LastDateScanned": "2026-07-10"
 }
