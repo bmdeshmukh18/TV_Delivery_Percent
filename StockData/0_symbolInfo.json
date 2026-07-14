@@ -1488,12 +1488,11 @@
         "GRPLTD",
         "SHARIABEES",
         "UTISXN50",
-        "EUROTEXIND",
-        "IIFLWAM",
-        "KEYFINSERV",
         "DBSTOCKBRO",
+        "EUROTEXIND",
         "GFLLIMITED",
         "IIFLSEC",
+        "IIFLWAM",
         "EBANK",
         "AKASH",
         "MSPL",
@@ -1505,6 +1504,7 @@
         "VIKASPROP",
         "GISOLUTION",
         "IRCTC",
+        "KEYFINSERV",
         "KUANTUM",
         "ABSLBANETF",
         "JASH",
@@ -3185,8 +3185,9 @@
         "SILVERAXIS",
         "VALUEAXIS",
         "KNACK",
-        "GYFTR"
+        "GYFTR",
+        "AURUS"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-07-13"
+    "LastDateScanned": "2026-07-14"
 }
