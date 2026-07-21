@@ -3194,8 +3194,11 @@
         "RIR",
         "AGL",
         "AASTHA",
-        "AEROPLANE"
+        "AEROPLANE",
+        "BANK10BETF",
+        "LIQUIDBETA",
+        "SBIFUNDS"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-07-20"
+    "LastDateScanned": "2026-07-21"
 }
