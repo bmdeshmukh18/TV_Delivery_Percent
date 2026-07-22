@@ -3197,8 +3197,10 @@
         "AEROPLANE",
         "BANK10BETF",
         "LIQUIDBETA",
-        "SBIFUNDS"
+        "SBIFUNDS",
+        "MOMMIDCAP",
+        "PVTBANK"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-07-21"
+    "LastDateScanned": "2026-07-22"
 }
