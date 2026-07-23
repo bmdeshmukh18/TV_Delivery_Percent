@@ -3199,8 +3199,9 @@
         "LIQUIDBETA",
         "SBIFUNDS",
         "MOMMIDCAP",
-        "PVTBANK"
+        "PVTBANK",
+        "CPL"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-07-22"
+    "LastDateScanned": "2026-07-23"
 }
