@@ -3207,8 +3207,10 @@
         "CEMNTGROWW",
         "EMETAL",
         "INDOMIM",
-        "LCL"
+        "LCL",
+        "HDFCNIMEG",
+        "HYBRIDETF"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-07-30"
+    "LastDateScanned": "2026-07-31"
 }
