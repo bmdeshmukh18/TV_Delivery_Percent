@@ -3210,8 +3210,12 @@
         "LCL",
         "HDFCNIMEG",
         "HYBRIDETF",
-        "ALPINETEX"
+        "ALPINETEX",
+        "EBANK10",
+        "ELMDIV",
+        "INSUREIETF",
+        "MANIPALHOS"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-08-04"
+    "LastDateScanned": "2026-08-05"
 }
