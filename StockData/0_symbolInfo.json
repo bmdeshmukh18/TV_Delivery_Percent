@@ -3214,8 +3214,12 @@
         "EBANK10",
         "ELMDIV",
         "INSUREIETF",
-        "MANIPALHOS"
+        "MANIPALHOS",
+        "JNPR",
+        "MOMETAL",
+        "MOOILGAS",
+        "MVELECTRO"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-08-05"
+    "LastDateScanned": "2026-08-06"
 }
