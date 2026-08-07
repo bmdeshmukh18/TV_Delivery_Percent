@@ -3218,8 +3218,9 @@
         "JNPR",
         "MOMETAL",
         "MOOILGAS",
-        "MVELECTRO"
+        "MVELECTRO",
+        "MIDBANKADD"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-08-06"
+    "LastDateScanned": "2026-08-07"
 }
