@@ -3219,8 +3219,9 @@
         "MOMETAL",
         "MOOILGAS",
         "MVELECTRO",
-        "MIDBANKADD"
+        "MIDBANKADD",
+        "ONIDA"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-08-10"
+    "LastDateScanned": "2026-08-11"
 }
