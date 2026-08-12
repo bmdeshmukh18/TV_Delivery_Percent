@@ -3220,8 +3220,10 @@
         "MOOILGAS",
         "MVELECTRO",
         "MIDBANKADD",
-        "ONIDA"
+        "ONIDA",
+        "ANNAPURNA",
+        "ARDEE"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-08-11"
+    "LastDateScanned": "2026-08-12"
 }
