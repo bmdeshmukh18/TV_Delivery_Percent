@@ -3222,8 +3222,10 @@
         "MIDBANKADD",
         "ONIDA",
         "ANNAPURNA",
-        "ARDEE"
+        "ARDEE",
+        "SWARAJ",
+        "XTRANET"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-08-12"
+    "LastDateScanned": "2026-08-13"
 }
