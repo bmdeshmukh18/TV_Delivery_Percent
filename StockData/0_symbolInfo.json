@@ -2858,9 +2858,9 @@
         "GKENERGY",
         "RHETAN",
         "SAATVIKGL",
-        "ARSSBL",
         "ATLANTAELE",
         "GANESHCP",
+        "ARSSBL",
         "JARO",
         "SOLARWORLD",
         "STYL",
@@ -3387,8 +3387,10 @@
         "GAJA",
         "NIF500BETA",
         "TEMPSENS",
-        "AUGMONT"
+        "AUGMONT",
+        "SKYWAYS",
+        "SYMBIOTEC"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-08-31"
+    "LastDateScanned": "2026-09-01"
 }
