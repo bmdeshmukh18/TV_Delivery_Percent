@@ -3389,8 +3389,9 @@
         "TEMPSENS",
         "AUGMONT",
         "SKYWAYS",
-        "SYMBIOTEC"
+        "SYMBIOTEC",
+        "ENERGYAXIS"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-09-01"
+    "LastDateScanned": "2026-09-02"
 }
