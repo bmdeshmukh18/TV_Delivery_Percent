@@ -3390,8 +3390,10 @@
         "AUGMONT",
         "SKYWAYS",
         "SYMBIOTEC",
-        "ENERGYAXIS"
+        "ENERGYAXIS",
+        "KDGREEN",
+        "LUMINO"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-09-02"
+    "LastDateScanned": "2026-09-03"
 }
