@@ -3393,8 +3393,10 @@
         "ENERGYAXIS",
         "KDGREEN",
         "LUMINO",
-        "ESDS"
+        "ESDS",
+        "PERNIASPOP",
+        "VIVIANA"
     ],
     "pricescale": 2,
-    "LastDateScanned": "2026-09-04"
+    "LastDateScanned": "2026-09-07"
 }
